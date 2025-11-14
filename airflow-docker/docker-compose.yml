@@ -1,0 +1,40 @@
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=airflow
+      - POSTGRES_PASSWORD=airflow
+      - POSTGRES_DB=airflow
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 10s
+      retries: 5
+
+  airflow:
+    image: apache/airflow:2.10.2-python3.11
+    depends_on:
+      - postgres
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__CORE__FERNET_KEY=iYvQYqz2uBrPwwi6qjjFpZBNeR9nG1Sidye4SdHNv0o=
+      - AIRFLOW__CORE__LOAD_EXAMPLES=True
+      - CLIENT_ID=${CLIENT_ID}
+      - ACCESS_TOKEN=${ACCESS_TOKEN}
+
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=sa-east-1
+      - S3_BUCKET_NAME=twitch-streams-s3
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - /Users/edenrico/Documents/Projects/twitch-streams/stages:/opt/airflow/stages
+      - ./requirements.txt:/opt/airflow/requirements.txt
+    command: bash -c "airflow db init && airflow users create --username admin --firstname Admin --lastname User --role Admin --email admin@example.com --password admin && airflow scheduler & airflow webserver"
+
+volumes:
+  postgres_data:
