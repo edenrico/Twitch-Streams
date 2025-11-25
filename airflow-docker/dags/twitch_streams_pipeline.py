@@ -55,7 +55,7 @@ with DAG(
     "twitch_streams_pipeline",
     default_args=default_args,
     description="Pipeline para capturar e salvar dados da Twitch no S3",
-    schedule_interval="@hourly",
+    schedule_interval='*/30 * * * *',
     start_date=datetime(2025, 11, 6),
     catchup=False,
 ) as dag:
