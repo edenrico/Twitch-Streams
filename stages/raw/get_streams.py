@@ -5,14 +5,32 @@ import os
 
 LANGUAGES = ["pt", "en", "es"]
 LIMIT = 100
-ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
-CLIENT_ID = os.getenv("CLIENT_ID")
+
+
+def _mask(value: str, prefix: int = 6) -> str:
+    if not value:
+        return "None"
+    return value[:prefix] + "..." + value[-4:]
+
+
+def _creds():
+    return os.getenv("CLIENT_ID"), os.getenv("ACCESS_TOKEN")
 
 def get_streams(language):
+    client_id, access_token = _creds()
+    print(
+        f"[DEBUG] Preparando request para language={language}, client_id={_mask(client_id)}, "
+        f"token={_mask(access_token)}"
+    )
+
+    if not client_id or not access_token:
+        print("[ERRO] CLIENT_ID ou ACCESS_TOKEN nao configurados. Abortando chamada para Twitch.")
+        return []
+
     url = f"https://api.twitch.tv/helix/streams?first={LIMIT}&language={language}"
     headers = {
-        "Client-ID": CLIENT_ID,
-        "Authorization": f"Bearer {ACCESS_TOKEN}"
+        "Client-ID": client_id,
+        "Authorization": f"Bearer {access_token}"
     }
     response = requests.get(url, headers=headers)
     if response.status_code != 200:
@@ -21,6 +39,11 @@ def get_streams(language):
     return response.json().get("data", [])
 
 def collect_all_streams():
+    client_id, access_token = _creds()
+    print(
+        f"[DEBUG] Inicio da coleta. LANGUAGES={LANGUAGES}, client_id={_mask(client_id)}, "
+        f"token={_mask(access_token)}"
+    )
     all_streams = []
     for lang in LANGUAGES:
         streams = get_streams(lang)

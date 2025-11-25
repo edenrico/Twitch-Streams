@@ -13,6 +13,8 @@ services:
       retries: 5
 
   airflow:
+    env_file:
+      - ../.env
     image: apache/airflow:2.10.2-python3.11
     depends_on:
       - postgres
@@ -21,13 +23,6 @@ services:
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
       - AIRFLOW__CORE__FERNET_KEY=iYvQYqz2uBrPwwi6qjjFpZBNeR9nG1Sidye4SdHNv0o=
       - AIRFLOW__CORE__LOAD_EXAMPLES=True
-      - CLIENT_ID=${CLIENT_ID}
-      - ACCESS_TOKEN=${ACCESS_TOKEN}
-
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      - AWS_REGION=sa-east-1
-      - S3_BUCKET_NAME=twitch-streams-s3
     ports:
       - "8080:8080"
     volumes:

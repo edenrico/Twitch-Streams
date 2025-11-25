@@ -8,6 +8,7 @@ sys.path.append('/opt/airflow')
 from stages.raw.get_streams import collect_all_streams
 from stages.raw.upload_s3 import s3_upload_parquet
 from stages.raw.send_sqs import enviar_para_sqs
+import pandas as pd
 
 default_args = {
     "owner": "enrico",
@@ -15,25 +16,38 @@ default_args = {
     "retry_delay": timedelta(minutes=3)
 }
 
-def extract_and_load():
+def extract_streams(**context):
     print("Iniciando coleta de dados...")
     df = collect_all_streams()
     
     if df.empty:
         print("Nenhum dado retornado da API.")
-        return
+        return []
 
     print(f"Coletados {len(df)} registros.")
+    registros = df.to_dict('records')
+    context['ti'].xcom_push(key="registros", value=registros)
+    return registros
 
+def load_s3_raw(**context):
+    registros = context['ti'].xcom_pull(task_ids="extract_streams", key="registros") or []
+    if not registros:
+        print("Sem registros para carregar no S3.")
+        return
+    
+    df = pd.DataFrame(registros)
     print("Iniciando upload para S3 (Caminho Batch)...")
     s3_upload_parquet(df)
     print("Upload para S3 concluído.")
 
-    print(f"Iniciando envio de {len(df)} eventos para SQS (Caminho Real-Time)...")
+def publish_sqs(**context):
+    registros = context['ti'].xcom_pull(task_ids="extract_streams", key="registros") or []
+    if not registros:
+        print("Sem registros para enviar para SQS.")
+        return
 
-    lista_de_eventos = df.to_dict('records')
-    
-    for evento in lista_de_eventos:
+    print(f"Iniciando envio de {len(registros)} eventos para SQS (Caminho Real-Time)...")
+    for evento in registros:
         enviar_para_sqs(evento) 
     print("Envio para SQS concluído.")
         
@@ -46,9 +60,19 @@ with DAG(
     catchup=False,
 ) as dag:
 
-    extract_load_task = PythonOperator(
-        task_id="extract_and_load",
-        python_callable=extract_and_load
+    extract_streams_task = PythonOperator(
+        task_id="extract_streams",
+        python_callable=extract_streams
+    )
+
+    load_s3_raw_task = PythonOperator(
+        task_id="load_s3_raw",
+        python_callable=load_s3_raw
+    )
+
+    publish_sqs_task = PythonOperator(
+        task_id="publish_sqs",
+        python_callable=publish_sqs
     )
     
     run_silver_etl_job_task = GlueJobOperator(
@@ -65,4 +89,4 @@ with DAG(
         run_job_kwargs={}
     )
     
-    extract_load_task >> run_silver_etl_job_task >> run_gold_etl_job_task
+    extract_streams_task >> [load_s3_raw_task, publish_sqs_task] >> run_silver_etl_job_task >> run_gold_etl_job_task

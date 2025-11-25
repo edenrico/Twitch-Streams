@@ -8,15 +8,23 @@ import pandas as pd
 def s3_upload_parquet(df, prefix="raw"):
     now = datetime.now(timezone.utc)
     bucket = os.getenv("S3_BUCKET_NAME")
+    region = os.getenv("AWS_REGION")
+    access_key = os.getenv("AWS_ACCESS_KEY_ID")
+    secret_key = os.getenv("AWS_SECRET_ACCESS_KEY")
     #file_name = f"twitch_streams_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}.json"
     file_name = f"twitch_streams_{now.strftime('%Y%m%d_%H%M%S')}.parquet"
     object_name = f"{prefix}/{file_name}"
 
+    print(
+        f"[DEBUG] Preparando upload S3. bucket={bucket}, region={region}, "
+        f"prefix={prefix}, key={object_name}, access_key_present={bool(access_key)}, secret_key_present={bool(secret_key)}"
+    )
+
     s3_client = boto3.client(
         "s3",
-        aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
-        aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
-        region_name=os.getenv("AWS_REGION")
+        aws_access_key_id=access_key,
+        aws_secret_access_key=secret_key,
+        region_name=region
     )
 
     try:
