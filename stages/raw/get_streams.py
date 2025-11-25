@@ -6,12 +6,10 @@ import os
 LANGUAGES = ["pt", "en", "es"]
 LIMIT = 100
 
-
 def _mask(value: str, prefix: int = 6) -> str:
     if not value:
         return "None"
     return value[:prefix] + "..." + value[-4:]
-
 
 def _creds():
     return os.getenv("CLIENT_ID"), os.getenv("ACCESS_TOKEN")

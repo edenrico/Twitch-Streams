@@ -55,7 +55,7 @@ def lambda_handler(event, context):
             item_to_put = {
                 # Schema DynamoDB <-- Chave do JSON 'raw'
                 'nome_streamer':   data.get('streamer'),    # (Partition Key)
-                'timestamp_utc':   data.get('inicio'),      # (Sort Key)
+                'timestamp':   data.get('inicio'),      # (Sort Key)
                 'categoria':       data.get('categoria'),
                 'idioma':          data.get('idioma'),
                 'viewers':         int(data.get('viewers', 0)),
@@ -69,7 +69,7 @@ def lambda_handler(event, context):
             }
             
             # 4. Validação (Garantir que as chaves obrigatórias existem)
-            if not item_to_put['nome_streamer'] or not item_to_put['timestamp_utc']:
+            if not item_to_put['nome_streamer'] or not item_to_put['timestamp']:
                 print(f"Erro na Mensagem {message_id}: Faltando Partition Key (streamer) ou Sort Key (inicio).")
                 failed_message_ids.append(message_id)
                 continue 

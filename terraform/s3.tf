@@ -3,7 +3,16 @@ resource "aws_s3_bucket" "twitch_streams_bucket" {
   bucket = "twitch_streams_s3"
   tags = {
     Projeto = "Twitch Streams"
-    Ambiente = "Producao" # ou "Desenvolvimento"
+    Ambiente = "Producao"
+  }
+}
+
+# Athena bucket
+resource "aws_s3_bucket" "twitch_streams_utils_bucket" {
+  bucket = "datalake-utils-twitch-streams"
+  tags = {
+    Projeto = "Twitch Streams"
+    Ambiente = "Producao" 
   }
 }
 
@@ -23,7 +32,7 @@ resource "aws_s3_object" "silver_folder" {
 
 # scripts folder
 resource "aws_s3_object" "scripts_folder" {
-  bucket  = aws_s3_bucket.twitch_streams_bucket.id
+  bucket  = aws_s3_bucket.twitch_streams_utils_bucket.id
   key     = "scripts/"
   content = " "
 }
