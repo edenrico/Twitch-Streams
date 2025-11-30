@@ -79,6 +79,7 @@ with DAG(
         task_id="run_silver_etl_job",
         job_name="silver_glue",
         aws_conn_id="AWS_GLUE",
+        region_name="sa-east-1",
         run_job_kwargs={}
     )
     
@@ -86,6 +87,7 @@ with DAG(
         task_id="run_gold_etl_job",
         job_name="gold_glue",
         aws_conn_id="AWS_GLUE",
+        region_name="sa-east-1",
         run_job_kwargs={}
     )
     
