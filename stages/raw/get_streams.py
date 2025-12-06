@@ -22,7 +22,7 @@ def get_streams(language):
     )
 
     if not client_id or not access_token:
-        print("[ERRO] CLIENT_ID ou ACCESS_TOKEN nao configurados. Abortando chamada para Twitch.")
+        print("[ERRO] CLIENT_ID ou ACCESS_TOKEN nao configurados")
         return []
 
     url = f"https://api.twitch.tv/helix/streams?first={LIMIT}&language={language}"
