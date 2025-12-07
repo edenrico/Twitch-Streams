@@ -4,3 +4,9 @@ __pycache__/
 *.pyd
 .DS_Store
 .env
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup
+*.tfstate
+*.tfstate.backup
