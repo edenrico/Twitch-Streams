@@ -45,8 +45,7 @@ The goal is to provide insights into viewing patterns, popular categories, strea
 
 ### Workflow Diagram
 
-<!-- ADD YOUR WORKFLOW IMAGE HERE -->
-![Pipeline Architecture](docs/architecture-diagram.png)
+<img width="1245" height="612" alt="twitch-excalidraw" src="https://github.com/user-attachments/assets/fd3c7994-52c8-44ef-a3b4-3e22fbca14b2" />
 
 ### Main Components
 
@@ -232,12 +231,18 @@ This project implements the **Medallion Architecture** (Bronze → Silver → Go
    - Partition Key: `nome_streamer`
    - Sort Key: `timestamp`
    - Low-latency access for real-time queries
+  
+### Crawlers
+<img width="2506" height="734" alt="image" src="https://github.com/user-attachments/assets/eefa9ee4-e578-4b5d-8271-5ba8822ac185" />
 
 ### 📊 Query & Analysis
 
 - **Athena**: SQL queries over S3 data (all layers)
 - **Athena-DynamoDB Connector**: SQL queries over real-time DynamoDB data
 - **Glue Data Catalog**: Centralized metadata for all tables
+
+- Silver example:
+- <img width="2560" height="1488" alt="image" src="https://github.com/user-attachments/assets/55af53fa-bada-43f5-8779-7eadf2e0dd59" />
 
 ### 🔔 Monitoring
 
@@ -393,15 +398,7 @@ docker-compose up -d
 The DAG is configured to run **every 30 minutes** automatically via Airflow scheduler running in Docker on EC2.
 
 ### Execution Flow
-```mermaid
-graph LR
-    A[Extract Streams] --> B[Load S3 Raw]
-    A --> C[Publish SQS]
-    B --> D[Silver ETL Job]
-    C --> E[Lambda Consumer]
-    D --> F[Gold ETL Job]
-    E --> G[DynamoDB]
-```
+<img width="879" height="576" alt="Captura de Tela 2025-12-05 às 20 55 36" src="https://github.com/user-attachments/assets/3f31b497-3bc9-4d47-9e95-72f862028893" />
 
 **DAG Tasks:**
 1. `extract_streams`: Collects data from Twitch API (100 streams/language limit)
