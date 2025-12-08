@@ -542,8 +542,6 @@ docker stats airflow-docker-airflow-1
 
 **Eduardo Enrico** - aecesani@gmail.com / 11998992809
 
-**Project Link**: [https://github.com/your-username/twitch-streams-pipeline](https://github.com/your-username/twitch-streams-pipeline)
-
 ---
 
 ## 🙏 Acknowledgments
