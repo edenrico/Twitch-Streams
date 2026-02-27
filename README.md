@@ -45,7 +45,7 @@ The goal is to provide insights into viewing patterns, popular categories, strea
 
 ### Workflow Diagram
 
-<img width="1245" height="612" alt="twitch-excalidraw" src="https://github.com/user-attachments/assets/fd3c7994-52c8-44ef-a3b4-3e22fbca14b2" />
+<img width="2252" height="1719" alt="image" src="https://github.com/user-attachments/assets/f4db5b42-a6b2-4fef-902f-b27ab839aea0" />
 
 ### Main Components
 
